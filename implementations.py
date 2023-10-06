@@ -14,7 +14,10 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
         w: the last weight vector of the method
         loss: the corresponding loss value 
     """
+    # initialize w
     w = initial_w
+    # initialize loss
+    loss = compute_loss_mse(y, tx, initial_w)
     for n_iter in range(max_iters):
         # compute gradient
         gradient = compute_gradient_mse(y, tx, w)
