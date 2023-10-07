@@ -7,7 +7,7 @@ def compute_loss_mse(y, tx, w):
     Args:
         y: numpy array of shape = (N, )
         tx: numpy array of shape = (N, D)
-        w: numpy array of shape = (D,). The vector of model parameters.
+        w: numpy array of shape = (D, ). The vector of model parameters.
 
     Returns:
         the value of the loss (a scalar), corresponding to the input parameters w.

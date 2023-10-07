@@ -6,26 +6,26 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     Args:
         y: numpy array of shape = (N, )
         tx: numpy array of shape = (N, D)
-        initial_w: numpy array of shape = (D, )
+        initial_w: numpy array of shape = (D, 1)
         max_iters: a scalar denoting the total number of iterations
         gamma: a scalar denoting the step size 
 
     Returns:
-        w: the last weight vector of the method
+        w: numpy array of shape = (D, 1) corresponding to the last weight vector of the method
         loss: the corresponding loss value 
     """
     # initialize w
     w = initial_w
     # initialize loss
-    loss = compute_loss_mse(y, tx, initial_w)
+    loss = compute_loss_mse(y, tx, w)
     for n_iter in range(max_iters):
         # compute gradient
         gradient = compute_gradient_mse(y, tx, w)
-        # compute loss
-        loss = compute_loss_mse(y, tx, w)
         # update weights 
         w = w - gamma*gradient
-    return (w, loss)
+        # compute loss
+        loss = compute_loss_mse(y, tx, w)
+    return w, loss
 
 def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
     """ Linear regression using stochastic gradient descent
