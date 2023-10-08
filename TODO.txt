@@ -1,0 +1,22 @@
+implementations:
+log_regression
+log_regression_reg
+
+dataset: 
+learn about dataset, which features are continious/categorical, distribution, correlation
+
+feature processing:
+cleaning, combining, better represenations, scaling
+imputation (median nesho simple ili pokompleksno kako optional-MICE/KNN)
+
+model:
+determining whether a model underfits or overfits, visualizing, wrongly classified datapoints(why is this the case) -> improve model
+
+accurately estimate with cross-validation how the model is doing. Which changes had the largest impact on the outcome (preprocessing, feat eng etc.)
+
+report:
+strict limit of 2 pages
+
+reproducibility!!!
+complete information about which values we tried (lambda, params...)
+by how much do changes increase/decrease result, use baseline algorithms!
