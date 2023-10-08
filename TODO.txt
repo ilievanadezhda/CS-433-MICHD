@@ -1,13 +1,18 @@
 implementations:
-log_regression
-log_regression_reg
+log_regression - matea , add comments
+log_regression_reg - matea , add comments
 
 dataset: 
-learn about dataset, which features are continious/categorical, distribution, correlation
+learn about dataset, which features are continious/categorical, distribution, correlation - nadezda
 
 feature processing:
-cleaning, combining, better represenations, scaling
-imputation (median nesho simple ili pokompleksno kako optional-MICE/KNN)
+cleaning, combining, better represenations, scaling - stefan, after dataset is finished
+imputation (median nesho simple ili pokompleksno kako optional - MICE/KNN)
+
+
+submit a baseline
+---------------------------------------------------------------------------------- meet to discuss further work
+
 
 model:
 determining whether a model underfits or overfits, visualizing, wrongly classified datapoints(why is this the case) -> improve model
