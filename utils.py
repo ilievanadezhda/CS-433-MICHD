@@ -180,7 +180,7 @@ def mean_imputation(x):
     return x_fill
 
 
-def standardize_data(x):
+def standardize(x):
     """
     Standardizes the input data.
 

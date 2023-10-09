@@ -1,4 +1,4 @@
-from utils import compute_loss_mse, compute_gradient_mse, compute_stoch_gradient
+from utils import *
 from helpers import *
 
 

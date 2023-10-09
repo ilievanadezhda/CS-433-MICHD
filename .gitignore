@@ -4,3 +4,4 @@ __pycache__
 .~lock.test_predictions.csv#
 settings.json
 .DS_Store
+*.csv
