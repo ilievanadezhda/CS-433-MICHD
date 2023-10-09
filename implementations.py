@@ -79,11 +79,35 @@ def ridge_regression(y, tx, lambda_):
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
     """Logistic regression using gradient descent or SGD (y in {0,1})"""
-    raise NotImplementedError
+
+    # initialize w
+    w = initial_w
+    # initialize loss
+    loss = compute_loss_logistic(y, tx, w)
+    for n_iter in range(max_iters):
+        # compute gradient
+        gradient = compute_gradient_logistic(y, tx, w)
+        # update weights
+        w = w - gamma * gradient
+        # compute loss
+        loss = compute_loss_logistic(y, tx, w)
+    return w, loss
 
 
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     """Regularized logistic regression using gradient descent or SGD (y in {0,1},
     with regularization term lambda*|w|^2)
     """
-    raise NotImplementedError
+
+    # initialize w
+    w = initial_w
+    # initialize loss
+    loss = compute_loss_logistic(y, tx, w)
+    for n_iter in range(max_iters):
+        # compute gradient
+        gradient = compute_gradient_logistic(y, tx, w) + 2 * lambda_ * w
+        # update weights
+        w = w - gamma * gradient
+        # compute loss
+        loss = compute_loss_logistic(y, tx, w)
+    return w, loss
