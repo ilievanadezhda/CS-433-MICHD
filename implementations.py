@@ -1,4 +1,4 @@
-from utils import *
+from utils import compute_loss_mse, compute_gradient_mse, compute_stoch_gradient
 from helpers import *
 
 
@@ -31,7 +31,7 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     return w, loss
 
 
-def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma=0.1):
+def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
     """Linear regression using stochastic gradient descent"""
 
     # initialize w
