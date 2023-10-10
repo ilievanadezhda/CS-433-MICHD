@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from typing import Callable, Tuple
 
 
 def compute_loss_mse(y, tx, w):
@@ -203,3 +204,69 @@ def standardize(x):
     standardized = (x - mean) / std_dev
 
     return standardized
+
+
+def build_k_indices(y, k_fold, seed):
+    """build k indices for k-fold.
+
+    Args:
+        y:      shape=(N,)
+        k_fold: K in K-fold, i.e. the fold num
+        seed:   the random seed
+
+    Returns:
+        A 2D array of shape=(k_fold, N/k_fold) that indicates the data indices for each fold
+
+    >>> build_k_indices(np.array([1., 2., 3., 4.]), 2, 1)
+    array([[3, 2],
+           [0, 1]])
+    """
+
+    num_rows = y.shape[0]
+    # get the interval of each fold
+    interval = int(num_rows / k_fold)
+    np.random.seed(seed)
+    indices = np.random.permutation(num_rows)
+    # get an array of indices
+    k_indices = [indices[k * interval : (k + 1) * interval] for k in range(k_fold)]
+    return np.array(k_indices)
+
+
+def cross_validation(y, x, k_indices, k, lambda_, model: Callable):
+    """return the loss of ridge regression for k folds.
+
+    Args:
+        y:          shape=(N,)
+        x:          shape=(N,)
+        k_indices:  2D array returned by build_k_indices()
+        k:          scalar, number of folds
+        lambda_:    scalar, cf. ridge_regression()
+        model:      function, cf. ridge_regression()
+
+    Returns:
+        train and test root mean square errors rmse = sqrt(2 mse) and the weights w
+    """
+
+    losses_train, losses_test, ws = [], [], []
+
+    for kth in range(k):
+        test_indices = k_indices[kth]
+        train_indices = k_indices[
+            np.arange(k_indices.shape[0]) != kth
+        ]  # all but kth element
+        train_indices = train_indices.reshape(-1)
+
+        x_train = x[train_indices]
+        y_train = y[train_indices]
+        x_test = x[test_indices]
+        y_test = y[test_indices]
+
+        w = model(y_train, x_train, lambda_)
+        ws.append(w)
+
+        loss_train = compute_loss_mse(y_train, x_train, w)
+        loss_test = compute_loss_mse(y_test, x_test, w)
+        losses_train.append(np.sqrt(2 * loss_train))
+        losses_test.append(np.sqrt(2 * loss_test))
+
+    return np.mean(losses_train), np.mean(losses_test), np.mean(ws, axis=0)
