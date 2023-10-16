@@ -6,11 +6,11 @@ dataset:
 learn about dataset, which features are continious/categorical, distribution, correlation - nadezda
 
 feature processing:
-cleaning, combining, better represenations, scaling - stefan, after dataset is finished
-imputation (median nesho simple ili pokompleksno kako optional - MICE/KNN)
+cleaning, combining(poly), better represenations, scaling - stefan, after dataset is finished
+imputation - DONE
 
 
-submit a baseline
+submit a baseline -> Logistic Regression with default parameters, original dataset with mean or median imputation
 ---------------------------------------------------------------------------------- meet to discuss further work
 
 
@@ -25,3 +25,7 @@ strict limit of 2 pages
 reproducibility!!!
 complete information about which values we tried (lambda, params...)
 by how much do changes increase/decrease result, use baseline algorithms!
+
+
+
+

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from typing import Callable, Tuple
+from typing import Callable
 
 
 def compute_loss_mse(y, tx, w):
@@ -107,6 +107,7 @@ def compute_gradient_logistic(y, tx, w):
 def build_poly(x, degree):
     """
     Polynomial basis functions for input data x.
+
     Args:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
         degree: integer.
@@ -124,29 +125,35 @@ def build_poly(x, degree):
     return poly
 
 
-def columns_to_drop_numpy(x, threshold):
+def drop_columns(x, threshold):
     """
     Drop features with missing values above a certain threshold.
+
     Args:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
         threshold: float between 0 and 1.
+
     Returns:
-        columns_to_drop: numpy array of shape (D', )
+        x with dropped columns
     """
 
     nan_count = np.isnan(x).sum(axis=0)
     nan_ratio = nan_count / x.shape[0]
     columns_to_drop_indices = np.where(nan_ratio > threshold)[0]
     columns_to_drop = columns_to_drop_indices.tolist()
+    all_columns = np.arange(x.shape[1])
+    columns_to_keep = np.delete(all_columns, columns_to_drop)
 
-    return columns_to_drop
+    return x[:, columns_to_keep]
 
 
-def median_imputation_numpy(x):
+def median_imputation(x):
     """
     Impute missing values in x with the median of the column.
+
     Args:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
+
     Returns:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
     """
@@ -164,8 +171,10 @@ def median_imputation_numpy(x):
 def mean_imputation(x):
     """
     Impute missing values in x with the median of the column.
+
     Args:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
+
     Returns:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
     """
@@ -185,7 +194,7 @@ def standardize(x):
     """
     Standardizes the input data.
 
-    Parameters:
+    Args:
     x (numpy.ndarray): The input data as a NumPy array.
 
     Returns:
@@ -230,43 +239,3 @@ def build_k_indices(y, k_fold, seed):
     # get an array of indices
     k_indices = [indices[k * interval : (k + 1) * interval] for k in range(k_fold)]
     return np.array(k_indices)
-
-
-def cross_validation(y, x, k_indices, k, lambda_, model: Callable):
-    """return the loss of ridge regression for k folds.
-
-    Args:
-        y:          shape=(N,)
-        x:          shape=(N,)
-        k_indices:  2D array returned by build_k_indices()
-        k:          scalar, number of folds
-        lambda_:    scalar, cf. ridge_regression()
-        model:      function, cf. ridge_regression()
-
-    Returns:
-        train and test root mean square errors rmse = sqrt(2 mse) and the weights w
-    """
-
-    losses_train, losses_test, ws = [], [], []
-
-    for kth in range(k):
-        test_indices = k_indices[kth]
-        train_indices = k_indices[
-            np.arange(k_indices.shape[0]) != kth
-        ]  # all but kth element
-        train_indices = train_indices.reshape(-1)
-
-        x_train = x[train_indices]
-        y_train = y[train_indices]
-        x_test = x[test_indices]
-        y_test = y[test_indices]
-
-        w = model(y_train, x_train, lambda_)
-        ws.append(w)
-
-        loss_train = compute_loss_mse(y_train, x_train, w)
-        loss_test = compute_loss_mse(y_test, x_test, w)
-        losses_train.append(np.sqrt(2 * loss_train))
-        losses_test.append(np.sqrt(2 * loss_test))
-
-    return np.mean(losses_train), np.mean(losses_test), np.mean(ws, axis=0)

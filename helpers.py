@@ -4,7 +4,12 @@ import numpy as np
 
 
 def load_csv_data(data_path, sub_sample=False, test=False):
-    """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
+    """
+    Loads data and returns y (class labels), tX (features) and ids (event ids)
+    Arguments: data_path (string), sub_sample (bool), test (bool)
+    Returns y (numpy array), tX (numpy array), ids (numpy array) if test == False
+    Returns tX (numpy array), ids (numpy array) if test == True
+    """
     if test == False:
         y = np.genfromtxt(
             data_path + "y_train.csv",
