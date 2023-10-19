@@ -2,8 +2,9 @@
 import numpy as np
 import pandas as pd
 
+
 def compute_loss_mse(y, tx, w):
-    """ Computes the loss using MSE.
+    """Computes the loss using MSE.
 
     Args:
         y: numpy array of shape = (N, )
@@ -21,7 +22,7 @@ def compute_loss_mse(y, tx, w):
 
 
 def compute_gradient_mse(y, tx, w):
-    """ Computes the gradient at w.
+    """Computes the gradient at w.
 
     Args:
         y: numpy array of shape = (N, )
@@ -37,7 +38,7 @@ def compute_gradient_mse(y, tx, w):
 
 
 def compute_stoch_gradient(y, tx, w):
-    """ Compute a stochastic gradient at w from just few examples n and their corresponding y_n labels.
+    """Compute a stochastic gradient at w from just few examples n and their corresponding y_n labels.
 
     Args:
         y: numpy array of shape=(N, )
@@ -53,7 +54,7 @@ def compute_stoch_gradient(y, tx, w):
 
 
 def sigmoid(x):
-    """ Applies sigmoid function on x.
+    """Applies sigmoid function on x.
 
     Args:
         x: scalar or numpy array
@@ -65,7 +66,7 @@ def sigmoid(x):
 
 
 def compute_loss_logistic(y, tx, w):
-    """ Computes the loss using logistic regression.
+    """Computes the loss using logistic regression.
 
     Args:
         y: numpy array of shape = (N, )
@@ -82,7 +83,7 @@ def compute_loss_logistic(y, tx, w):
 
 
 def compute_gradient_logistic(y, tx, w):
-    """ Computes the gradient at w using logistic regression.
+    """Computes the gradient at w using logistic regression.
 
     Args:
         y: numpy array of shape = (N, )
@@ -97,3 +98,38 @@ def compute_gradient_logistic(y, tx, w):
     gradient = np.dot(tx.T, (p - y)) / len(y)
     return gradient
 
+
+def f1_score(y_true, y_pred):
+    """Computes the F1 score.
+    Args:
+        y_true: numpy array of shape = (N, ). The true labels.
+        y_pred: numpy array of shape = (N, ). The predicted labels.
+    Returns:
+        The F1 score (a scalar)
+    """
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+
+    classes = np.unique(y_true)
+
+    # If it's binary, just consider one of the classes as positive
+    if len(classes) == 2:
+        classes = np.array([1])
+
+    tp = np.zeros_like(classes, dtype=np.float64)
+    fp = np.zeros_like(classes, dtype=np.float64)
+    fn = np.zeros_like(classes, dtype=np.float64)
+
+    for i, c in enumerate(classes):
+        tp[i] = np.sum((y_true == c) & (y_pred == c))
+        fp[i] = np.sum((y_true != c) & (y_pred == c))
+        fn[i] = np.sum((y_true == c) & (y_pred != c))
+
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    f1 = 2 * (precision * recall) / (precision + recall)
+    f1 = np.nan_to_num(f1)
+
+    f1_score = np.mean(f1)
+
+    return f1_score
