@@ -1,8 +1,10 @@
 """ This file contains some helper functions for data cleaning and feature processing. """
 import numpy as np
 
+
 def drop_columns(x, threshold):
-    """ Drop features with missing values above a certain threshold.
+    """
+    Drop features with missing values above a certain threshold.
 
     Args:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
@@ -11,17 +13,75 @@ def drop_columns(x, threshold):
     Returns:
         x with dropped columns
     """
+
     nan_count = np.isnan(x).sum(axis=0)
     nan_ratio = nan_count / x.shape[0]
     columns_to_drop_indices = np.where(nan_ratio > threshold)[0]
     columns_to_drop = columns_to_drop_indices.tolist()
     all_columns = np.arange(x.shape[1])
     columns_to_keep = np.delete(all_columns, columns_to_drop)
-    return x[:, columns_to_keep]
+
+    return x[:, columns_to_keep], columns_to_keep
+
+
+def drop_correlated_columns(data, threshold):
+    """
+    Drop correlated columns from a numpy matrix based on a correlation threshold.
+
+    Parameters:
+    - data (numpy array): The data matrix.
+    - threshold (float): The correlation threshold.
+
+    Returns:
+    - The data matrix after dropping correlated columns.
+    """
+    corr_matrix = np.corrcoef(data, rowvar=False)
+    upper_triangle_mask = np.triu(np.ones_like(corr_matrix, dtype=bool), k=1)
+    correlated_pairs = np.column_stack(
+        np.where(abs(corr_matrix * upper_triangle_mask) > threshold)
+    )
+    columns_to_drop = set()
+    for i, j in correlated_pairs:
+        columns_to_drop.add(j)
+
+    all_columns = np.arange(data.shape[1])
+    columns_to_drop = np.array(
+        list(columns_to_drop), dtype=int
+    )  # Convert set to numpy array
+    columns_to_keep = np.delete(all_columns, columns_to_drop)
+
+    reduced_data = np.delete(data, columns_to_drop, axis=1)
+
+    return reduced_data, columns_to_keep
+
+
+def drop_single_value_columns(data):
+    """
+    Drop columns with a single unique value from a numpy array.
+
+    Parameters:
+    - data (numpy array): The data matrix.
+
+    Returns:
+    - The data matrix after dropping the columns.
+    """
+    columns_to_drop = []
+    for i in range(data.shape[1]):
+        if len(np.unique(data[:, i])) == 1:
+            columns_to_drop.append(i)
+
+    all_columns = np.arange(data.shape[1])
+    columns_to_drop = np.array(
+        list(columns_to_drop), dtype=int
+    )  # Convert set to numpy array
+    columns_to_keep = np.delete(all_columns, columns_to_drop)
+    reduced_data = np.delete(data, columns_to_drop, axis=1)
+
+    return reduced_data, columns_to_keep
 
 
 def median_imputation(x):
-    """ Impute missing values in x with the median of the column.
+    """Impute missing values in x with the median of the column.
 
     Args:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
@@ -37,7 +97,7 @@ def median_imputation(x):
 
 
 def mean_imputation(x):
-    """ Impute missing values in x with the median of the column.
+    """Impute missing values in x with the median of the column.
 
     Args:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
@@ -53,7 +113,7 @@ def mean_imputation(x):
 
 
 def standardize(x):
-    """ Standardizes the input data.
+    """Standardizes the input data.
 
     Args:
         x (numpy.ndarray): The input data as a NumPy array.
@@ -73,7 +133,7 @@ def standardize(x):
 
 
 def build_poly(x, degree):
-    """ Polynomial basis functions for input data x.
+    """Polynomial basis functions for input data x.
 
     Args:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
@@ -90,7 +150,7 @@ def build_poly(x, degree):
 
 
 def build_k_indices(y, k_fold, seed):
-    """ Build k indices for k-fold.
+    """Build k indices for k-fold.
 
     Args:
         y:      shape=(N,)

@@ -6,8 +6,9 @@ from implementations_utils import (
     compute_loss_mse,
     compute_gradient_mse,
     compute_stoch_gradient,
-    sigmoid
+    sigmoid,
 )
+
 
 def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     """Linear regression using gradient descent
@@ -115,7 +116,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
 
 
 def cross_validation(y, x, k_indices, k, model_func, model_args={}):
-    """ Return the loss of the model for k folds.
+    """Return the loss of the model for k folds.
 
     Args:
         y:          shape=(N,)
