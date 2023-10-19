@@ -1,13 +1,13 @@
-from utils import (
+import numpy as np
+from helpers import batch_iter
+from implementations_utils import (
     compute_loss_logistic,
     compute_gradient_logistic,
     compute_loss_mse,
     compute_gradient_mse,
     compute_stoch_gradient,
-    sigmoid,
+    sigmoid
 )
-from helpers import *
-
 
 def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     """Linear regression using gradient descent
@@ -15,15 +15,14 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     Args:
         y: numpy array of shape = (N, )
         tx: numpy array of shape = (N, D)
-        initial_w: numpy array of shape = (D, 1)
+        initial_w: numpy array of shape = (D, )
         max_iters: a scalar denoting the total number of iterations
         gamma: a scalar denoting the step size
 
     Returns:
-        w: numpy array of shape = (D, 1) corresponding to the last weight vector of the method
+        w: numpy array of shape = (D, ) corresponding to the last weight vector of the method
         loss: the corresponding loss value
     """
-
     # initialize w
     w = initial_w
     # initialize loss
@@ -40,7 +39,6 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
 
 def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
     """Linear regression using stochastic gradient descent"""
-
     # initialize w
     w = initial_w
     # initialize loss
@@ -64,7 +62,6 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
 
 def least_squares(y, tx):
     """Least squares regression using normal equations"""
-
     X = np.dot(tx.T, tx)
     Y = np.dot(tx.T, y)
     w = np.linalg.solve(X, Y)
@@ -75,7 +72,6 @@ def least_squares(y, tx):
 
 def ridge_regression(y, tx, lambda_):
     """Ridge regression using normal equations"""
-
     reg = 2 * tx.shape[0] * lambda_ * np.identity(tx.shape[1])
     X = np.dot(tx.T, tx) + reg
     Y = np.dot(tx.T, y)
@@ -86,7 +82,6 @@ def ridge_regression(y, tx, lambda_):
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
     """Logistic regression using gradient descent or SGD (y in {0,1})"""
-
     # initialize w
     w = initial_w
     # initialize loss
@@ -105,7 +100,6 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     """Regularized logistic regression using gradient descent or SGD (y in {0,1},
     with regularization term lambda*|w|^2)
     """
-
     # initialize w
     w = initial_w
     # initialize loss
@@ -121,7 +115,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
 
 
 def cross_validation(y, x, k_indices, k, model_func, model_args={}):
-    """return the loss of the model for k folds.
+    """ Return the loss of the model for k folds.
 
     Args:
         y:          shape=(N,)
@@ -134,7 +128,6 @@ def cross_validation(y, x, k_indices, k, model_func, model_args={}):
     Returns:
         train and test root mean square errors rmse = sqrt(2 mse) and the weights w
     """
-
     losses_train, losses_test, accuracies_train, accuracies_test, ws = (
         [],
         [],
