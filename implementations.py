@@ -6,8 +6,10 @@ from implementations_utils import (
     compute_loss_mse,
     compute_gradient_mse,
     compute_stoch_gradient,
-    sigmoid
+    sigmoid,
+    f1_score,
 )
+
 
 def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     """Linear regression using gradient descent
@@ -114,21 +116,38 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     return w, loss
 
 
-def cross_validation(y, x, k_indices, k, model_func, model_args={}):
-    """ Return the loss of the model for k folds.
-
+def cross_validation(
+    y, x, k_indices, k, lambda_=0.1, max_iters=100, gamma=0.01, mod="ridge"
+):
+    """Cross validation for different models
     Args:
-        y:          shape=(N,)
-        x:          shape=(N,)
-        k_indices:  2D array returned by build_k_indices()
-        k:          scalar, number of folds
-        model_func: function to compute the weights and loss
-        model_args: dict, arguments to pass to the model function
-
+        y: numpy array of shape = (N, )
+        x: numpy array of shape = (N, D)
+        k_indices: numpy array of shape = (k, N/k)
+        k: a scalar denoting the number of folds
+        lambda_: a scalar denoting the regularization parameter
+        max_iters: a scalar denoting the total number of iterations
+        gamma: a scalar denoting the step size
+        mod: a string denoting the model to use
     Returns:
-        train and test root mean square errors rmse = sqrt(2 mse) and the weights w
+        losses_train: numpy array of shape = (k, ) containing the training losses
+        losses_test: numpy array of shape = (k, ) containing the testing losses
+        accuracies_train: numpy array of shape = (k, ) containing the training accuracies
+        accuracies_test: numpy array of shape = (k, ) containing the testing accuracies
+        ws: numpy array of shape = (k, D) containing the weights
     """
-    losses_train, losses_test, accuracies_train, accuracies_test, ws = (
+
+    (
+        losses_train,
+        losses_test,
+        accuracies_train,
+        accuracies_test,
+        f1s_train,
+        f1s_test,
+        ws,
+    ) = (
+        [],
+        [],
         [],
         [],
         [],
@@ -137,7 +156,6 @@ def cross_validation(y, x, k_indices, k, model_func, model_args={}):
     )
 
     for kth in range(k):
-        print("kth={}".format(kth))
         test_indices = k_indices[kth]
         train_indices = k_indices[
             np.arange(k_indices.shape[0]) != kth
@@ -149,44 +167,73 @@ def cross_validation(y, x, k_indices, k, model_func, model_args={}):
         x_test = x[test_indices]
         y_test = y[test_indices]
 
-        w, final_loss = model_func(y_train, x_train, **model_args)
+        initial_w = np.zeros(x.shape[1])
+
+        if mod == "ridge":
+            w, _ = ridge_regression(y_train, x_train, lambda_)
+
+        elif mod == "logistic":
+            w, _ = logistic_regression(y_train, x_train, initial_w, max_iters, gamma)
+
+        elif mod == "reg_logistic":
+            w, _ = reg_logistic_regression(
+                y_train, x_train, lambda_, initial_w, max_iters, gamma
+            )
+
+        elif mod == "least_squares":
+            w, _ = least_squares(y_train, x_train)
+
+        elif mod == "mse_gd":
+            w, _ = mean_squared_error_gd(y_train, x_train, initial_w, max_iters, gamma)
+
+        elif mod == "mse_sgd":
+            w, _ = mean_squared_error_sgd(y_train, x_train, initial_w, max_iters, gamma)
+
+        else:
+            raise ValueError("Unknown model")
+
         ws.append(w)
 
-        loss_train = compute_loss_mse(
-            y_train, x_train, w
-        )  # Modify this if you have a different loss for a specific model
-        loss_test = compute_loss_mse(y_test, x_test, w)  # Modify this if needed
+        pred_train = np.dot(x_train, w)
+        pred_test = np.dot(x_test, w)
 
-        # accuracy for train and test
-        pred_probs_train = sigmoid(np.dot(x_train, w))
-        predictions_train = np.where(pred_probs_train >= 0.5, 1, 0)
+        if mod == "logistic" or mod == "reg_logistic":
+            pred_train = sigmoid(pred_train)
+            pred_test = sigmoid(pred_test)
 
-        pred_probs_test = sigmoid(np.dot(x_test, w))
-        predictions_test = np.where(pred_probs_test >= 0.5, 1, 0)
+        prediction_train = np.where(pred_train >= 0.5, 1, 0)
+        prediction_test = np.where(pred_test >= 0.5, 1, 0)
 
-        accuracy_train = np.mean(y_train == predictions_train)
-        accuracy_test = np.mean(y_test == predictions_test)
+        loss_train = compute_loss_mse(y_train, x_train, w)
+        loss_test = compute_loss_mse(y_test, x_test, w)
+        losses_train.append(np.sqrt(2 * loss_train))
+        losses_test.append(np.sqrt(2 * loss_test))
+
+        accuracy_train = np.mean(y_train == prediction_train)
+        accuracy_test = np.mean(y_test == prediction_test)
         accuracies_train.append(accuracy_train)
         accuracies_test.append(accuracy_test)
 
-        losses_train.append(loss_train)
-        losses_test.append(loss_test)
-        # print accuracies
-        print(
-            "fold={k}, accuracy_train={l_tr:.3f}, accuracy_test={l_te:.3f},".format(
-                k=kth, l_tr=accuracies_train[-1], l_te=accuracies_test[-1]
-            )
-        )
-        print(
-            "loss_train={l_tr:.3f}, loss_test={l_te:.3f},".format(
-                l_tr=losses_train[-1], l_te=losses_test[-1]
-            )
-        )
+        f1_train = f1_score(y_train, prediction_train)
+        f1_test = f1_score(y_test, prediction_test)
+        f1s_train.append(f1_train)
+        f1s_test.append(f1_test)
+
+        print("Cross validation: {kth}/{k}".format(kth=kth + 1, k=k))
+        print("Training loss: {l}".format(l=loss_train))
+        print("Testing loss: {l}".format(l=loss_test))
+        # print("Training accuracy: {a}".format(a=accuracy_train))
+        # print("Testing accuracy: {a}".format(a=accuracy_test))
+        print("Training f1 score: {f}".format(f=f1_train))
+        print("Testing f1 score: {f}".format(f=f1_test))
+        print("")
 
     return (
         np.mean(losses_train),
         np.mean(losses_test),
         np.mean(accuracies_train),
         np.mean(accuracies_test),
+        np.mean(f1s_train),
+        np.mean(f1s_test),
         np.mean(ws, axis=0),
     )
