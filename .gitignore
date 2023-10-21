@@ -1,5 +1,6 @@
 project1_description.pdf
 __pycache__/
+archive/
 .~lock.test_predictions.csv#
 settings.json
 .DS_Store
