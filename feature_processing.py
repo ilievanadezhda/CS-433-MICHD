@@ -149,6 +149,42 @@ def build_poly(x, degree):
     return poly
 
 
+def build_log(x, epsilon=1e-10):
+    """Logarithm basis functions for input data x. Stacks original features and log features."""
+    log_transformation = np.log(np.abs(x) + epsilon)
+
+    log_features = np.hstack((x, log_transformation))
+
+    return log_features
+
+
+def build_ratios(x, epsilon=1e-10):
+    """Compute ratios of each feature against average, max, and min of all features.
+
+    Args:
+        x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
+        epsilon: small constant to prevent division by zero.
+
+    Returns:
+        ratio_features: numpy array of shape (N, 3D) containing the new features.
+    """
+
+    # Calculate average, max, and min across all features for each sample
+    avg_features = np.mean(x, axis=1, keepdims=True)
+    max_features = np.max(x, axis=1, keepdims=True)
+    min_features = np.min(x, axis=1, keepdims=True)
+
+    # Calculate ratios
+    ratio_to_avg = x / (avg_features + epsilon)
+    ratio_to_max = x / (max_features + epsilon)
+    ratio_to_min = x / (min_features + epsilon)
+
+    # Concatenate new features
+    ratio_features = np.hstack((ratio_to_avg, ratio_to_max, ratio_to_min))
+
+    return ratio_features
+
+
 def build_k_indices(y, k_fold, seed):
     """Build k indices for k-fold.
 
