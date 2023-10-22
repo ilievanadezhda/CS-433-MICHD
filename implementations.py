@@ -48,9 +48,9 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
         # iterate over batches
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=1, num_batches=1):
             # compute gradient
-            grad, _ = compute_stoch_gradient(y_batch, tx_batch, w)
+            gradient, _ = compute_stoch_gradient(y_batch, tx_batch, w)
             # update weights
-            w = w - gamma * grad
+            w = w - gamma * gradient
             # compute loss
             loss = compute_loss_mse(y, tx, w)
 
@@ -98,7 +98,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
     return w, loss
 
 
-def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
+def reg_logistic_regression(y, tx, initial_w, max_iters, gamma, lambda_):
     """Regularized logistic regression using gradient descent or SGD (y in {0,1},
     with regularization term lambda*|w|^2)
     """
@@ -177,7 +177,7 @@ def cross_validation(
 
         elif mod == "reg_logistic":
             w, _ = reg_logistic_regression(
-                y_train, x_train, lambda_, initial_w, max_iters, gamma
+                y_train, x_train, initial_w, max_iters, gamma, lambda_
             )
 
         elif mod == "least_squares":
