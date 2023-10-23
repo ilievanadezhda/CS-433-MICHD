@@ -41,6 +41,9 @@ def execute_pipeline(
     DEGREE,
     STANDARDIZE,
     NUM_FOLDS,
+    GAMMA_,
+    MAX_ITERS_,
+    LAMBDA,
     results,
 ):
     x_train_temp, cols_to_keep_1 = drop_columns(x_train, DROP_NAN_THRESHOLD)
@@ -70,31 +73,31 @@ def execute_pipeline(
         x_test_temp[:, numerical_features]
     )
 
-    # Drop columns with a single unique value or highly correlated columns
-    if DROP_SINGLE:
-        x_train_temp, cols_to_keep_3 = drop_single_value_columns(x_train_temp)
-        x_test_temp = x_test_temp[:, cols_to_keep_3]
-        print("Dropping single valued columns...")
-
-    x_train_temp, cols_to_keep_2 = drop_correlated_columns(
-        x_train_temp, DROP_CORR_THRESHOLD
-    )
-    x_test_temp = x_test_temp[:, cols_to_keep_2]
-
     # Data engineering: ratios, log-transform, polynomial features
     if BUILD_RATIOS:
         print("Building ratios...")
-        x_train_temp = build_ratios(x_train_temp)
-        x_test_temp = build_ratios(x_test_temp)
+        ratio_features_train = build_ratios(x_train_temp[:, numerical_features])
+        ratio_features_test = build_ratios(x_test_temp[:, numerical_features])
+        x_train_temp = np.hstack((x_train_temp, ratio_features_train))
+        x_test_temp = np.hstack((x_test_temp, ratio_features_test))
+
     if BUILD_LOG:
         print("Building log...")
-        x_train_temp = build_log(x_train_temp)
-        x_test_temp = build_log(x_test_temp)
+        log_features_train = build_log(x_train_temp[:, numerical_features])
+        log_features_test = build_log(x_test_temp[:, numerical_features])
+        x_train_temp = np.hstack((x_train_temp, log_features_train))
+        x_test_temp = np.hstack((x_test_temp, log_features_test))
 
     if BUILD_POLY:
         print(f"Building polynomial with degree = {DEGREE}...")
         x_train_temp = build_poly(x_train_temp, DEGREE)
         x_test_temp = build_poly(x_test_temp, DEGREE)
+
+    # Drop columns with a single unique value or highly correlated columns
+    if DROP_SINGLE:
+        x_train_temp, cols_to_keep_3 = drop_single_value_columns(x_train_temp)
+        x_test_temp = x_test_temp[:, cols_to_keep_3]
+        print("Dropping single valued columns...")
 
     # Standardize the datasets
     if STANDARDIZE:
@@ -102,10 +105,15 @@ def execute_pipeline(
         x_train_temp = standardize(x_train_temp)
         x_test_temp = standardize(x_test_temp)
 
+    x_train_temp, cols_to_keep_2 = drop_correlated_columns(
+        x_train_temp, DROP_CORR_THRESHOLD
+    )
+    x_test_temp = x_test_temp[:, cols_to_keep_2]
+
     # Cross-validation and model evaluation
     k_indices = build_k_indices(y_train, NUM_FOLDS, 42)
-    MAX_ITERS = 100
-    GAMMA = 0.5
+    MAX_ITERS = MAX_ITERS_
+    GAMMA = GAMMA_
     INITIAL_W = np.zeros(x_train_temp.shape[1])
 
     # Model
@@ -144,6 +152,8 @@ def execute_pipeline(
         "Max Iters": MAX_ITERS,
         "Gamma": GAMMA,
         "Lambda": -999,  # Not used
+        "CV F1 std": np.std(eval_results_test["f1_score"]),
+        "CV Accuracy std": np.std(eval_results_test["accuracy"]),
         "CV F1": np.mean(eval_results_test["f1_score"]),
         "CV Accuracy": np.mean(eval_results_test["accuracy"]),
     }
@@ -156,9 +166,9 @@ def execute_pipeline(
     print_results(eval_results_test)
     ### Regularized logistic regression
     # Model parameters
-    MAX_ITERS = 100
-    GAMMA = 0.5
-    LAMBDA_ = 0.1
+    MAX_ITERS = MAX_ITERS_
+    GAMMA = GAMMA_
+    LAMBDA_ = LAMBDA
 
     def _reg_logistic_regression(y, tx, initial_w):
         return reg_logistic_regression(y, tx, initial_w, MAX_ITERS, GAMMA, LAMBDA_)
@@ -194,6 +204,8 @@ def execute_pipeline(
         "Max Iters": MAX_ITERS,
         "Gamma": GAMMA,
         "Lambda": LAMBDA_,
+        "CV F1 std": np.std(eval_results_test["f1_score"]),
+        "CV Accuracy std": np.std(eval_results_test["accuracy"]),
         "CV F1": np.mean(eval_results_test["f1_score"]),
         "CV Accuracy": np.mean(eval_results_test["accuracy"]),
     }

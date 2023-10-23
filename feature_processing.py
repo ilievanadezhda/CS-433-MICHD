@@ -153,9 +153,7 @@ def build_log(x, epsilon=1e-10):
     """Logarithm basis functions for input data x. Stacks original features and log features."""
     log_transformation = np.log(np.abs(x) + epsilon)
 
-    log_features = np.hstack((x, log_transformation))
-
-    return log_features
+    return log_transformation
 
 
 def build_ratios(x, epsilon=1e-10):
@@ -171,16 +169,15 @@ def build_ratios(x, epsilon=1e-10):
 
     # Calculate average, max, and min across all features for each sample
     avg_features = np.mean(x, axis=1, keepdims=True)
-    max_features = np.max(x, axis=1, keepdims=True)
     min_features = np.min(x, axis=1, keepdims=True)
-
+    max_features = np.max(x, axis=1, keepdims=True)
     # Calculate ratios
     ratio_to_avg = x / (avg_features + epsilon)
-    ratio_to_max = x / (max_features + epsilon)
     ratio_to_min = x / (min_features + epsilon)
+    ratio_to_max = x / (max_features + epsilon)
 
-    # Concatenate new features
-    ratio_features = np.hstack((ratio_to_avg, ratio_to_max, ratio_to_min))
+    # Stack all ratios
+    ratio_features = np.hstack((ratio_to_avg, ratio_to_min, ratio_to_max))
 
     return ratio_features
 
