@@ -80,6 +80,30 @@ def drop_single_value_columns(data):
     return reduced_data, columns_to_keep
 
 
+def remove_outliers(x, low_perc, high_perc):
+    """
+    Remove outliers from the data.
+    Args:
+        x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
+        low_perc: numpy array of shape (D,) containing the lower percentile for each feature.
+        high_perc: numpy array of shape (D,) containing the upper percentile for each feature.
+    Returns:
+        x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
+    """
+    for i in range(np.shape(x)[1]):
+        x[:, i][x[:, i] < low_perc[i]] = low_perc[i]
+        x[:, i][x[:, i] > high_perc[i]] = high_perc[i]
+    return x
+
+
+# USAGE
+# #Removing outliers
+# low_perc = np.percentile(tx, gamma, axis = 0)
+# high_perc = np.percentile(tx, 100 - gamma, axis = 0)
+# tx = remove_outliers(tx, low_perc, high_perc)
+# tx_test = remove_outliers(tx_test, low_perc, high_perc)
+
+
 def median_imputation(x):
     """Impute missing values in x with the median of the column.
 
