@@ -171,7 +171,7 @@ def execute_pipeline(
     LAMBDA_ = LAMBDA
 
     def _reg_logistic_regression(y, tx, initial_w):
-        return reg_logistic_regression(y, tx, initial_w, MAX_ITERS, GAMMA, LAMBDA_)
+        return reg_logistic_regression(y, tx, LAMBDA_, initial_w, MAX_ITERS, GAMMA)
 
     # Cross validation
     (

@@ -76,6 +76,7 @@ def compute_loss_logistic(y, tx, w):
     Returns:
         The value of the loss (a scalar), corresponding to the input parameters w.
     """
+
     p = sigmoid(np.dot(tx, w))
     # compute loss
     loss = np.mean(-y * np.log(p) - (1 - y) * np.log(1 - p))

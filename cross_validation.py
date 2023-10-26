@@ -1,12 +1,15 @@
 import numpy as np
 from implementations_utils import sigmoid
 
+
 # Prediction functions
 def predict_mse(tx, w):
     return np.where(np.dot(tx, w) >= 0.5, 1, 0)
 
+
 def predict_logistic(tx, w):
     return np.where(sigmoid(np.dot(tx, w)) >= 0.5, 1, 0)
+
 
 # Evaluation metrics
 def accuracy(y_true, y_pred):
@@ -18,6 +21,7 @@ def accuracy(y_true, y_pred):
         The accuracy (a scalar)
     """
     return np.mean(y_true == y_pred)
+
 
 def f1_score(y_true, y_pred):
     """Computes the F1 score.
@@ -45,16 +49,20 @@ def f1_score(y_true, y_pred):
     f1 = 2 * (precision * recall) / (precision + recall)
     return np.mean(np.nan_to_num(f1))
 
+
 # Print functions
-def print_fold_results(idx, k, eval_results_train, eval_results_test, losses_train, losses_test):
-    print("Fold {idx}/{k}".format(idx=idx+1, k=k))
+def print_fold_results(
+    idx, k, eval_results_train, eval_results_test, losses_train, losses_test
+):
+    print("Fold {idx}/{k}".format(idx=idx + 1, k=k))
     print("Train loss: {l:.5f}".format(l=losses_train[idx]))
     print("Test loss: {l:.5f}".format(l=losses_test[idx]))
     for key, value in eval_results_train.items():
         print("Train {key}: {value:.5f}".format(key=key, value=value[idx]))
     for key, value in eval_results_test.items():
         print("Test {key}: {value:.5f}".format(key=key, value=value[idx]))
-    print("-"*30)
+    print("-" * 30)
+
 
 def print_results(eval_results):
     means = {key: np.mean(values) for key, values in eval_results.items()}
@@ -62,12 +70,15 @@ def print_results(eval_results):
     for key in eval_results.keys():
         print(f"{key} : {means[key]:.6f} ± {stds[key]:.6f}")
 
+
 # Cross validation
 def cross_validation(y, tx, k_indices, model_fn, loss_fn, pred_fn, eval_fns=dict()):
     k = len(k_indices)
     all_weights = []
     losses_train, losses_test = [], []
-    eval_results_train, eval_results_test = {key: [] for key in eval_fns.keys()}, {key: [] for key in eval_fns.keys()}
+    eval_results_train, eval_results_test = {key: [] for key in eval_fns.keys()}, {
+        key: [] for key in eval_fns.keys()
+    }
     for idx in range(k):
         # get test/train indices
         test_idx, train_idx = k_indices[idx], k_indices[np.arange(k) != idx].reshape(-1)
@@ -90,9 +101,16 @@ def cross_validation(y, tx, k_indices, model_fn, loss_fn, pred_fn, eval_fns=dict
         for key, value in eval_fns.items():
             # append train
             eval_results_train[key].append(value(y_train, y_pred_train))
-            # append test 
+            # append test
             eval_results_test[key].append(value(y_test, y_pred_test))
         # print results
-        print_fold_results(idx, k, eval_results_train, eval_results_test, losses_train, losses_test)
-    return eval_results_train, eval_results_test, losses_train, losses_test, np.mean(all_weights, axis=0)
-
+        print_fold_results(
+            idx, k, eval_results_train, eval_results_test, losses_train, losses_test
+        )
+    return (
+        eval_results_train,
+        eval_results_test,
+        losses_train,
+        losses_test,
+        np.mean(all_weights, axis=0),
+    )
