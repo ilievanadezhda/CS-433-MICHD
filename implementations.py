@@ -1,3 +1,4 @@
+"""This file contains implementations of the required methods."""
 import numpy as np
 from helpers import batch_iter
 from implementations_utils import (

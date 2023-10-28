@@ -82,7 +82,7 @@ def drop_single_value_columns(data):
 
 def remove_outliers(x, low_perc, high_perc):
     """
-    Remove outliers from the data.
+    Remove outliers
     Args:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
         low_perc: numpy array of shape (D,) containing the lower percentile for each feature.
@@ -94,14 +94,6 @@ def remove_outliers(x, low_perc, high_perc):
         x[:, i][x[:, i] < low_perc[i]] = low_perc[i]
         x[:, i][x[:, i] > high_perc[i]] = high_perc[i]
     return x
-
-
-# USAGE
-# #Removing outliers
-# low_perc = np.percentile(tx, gamma, axis = 0)
-# high_perc = np.percentile(tx, 100 - gamma, axis = 0)
-# tx = remove_outliers(tx, low_perc, high_perc)
-# tx_test = remove_outliers(tx_test, low_perc, high_perc)
 
 
 def median_imputation(x):

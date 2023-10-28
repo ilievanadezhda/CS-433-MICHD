@@ -1,3 +1,4 @@
+"""This file is used to generate the best submission."""
 import numpy as np
 from helpers import load_csv_data, create_csv_submission
 from feature_processing import (

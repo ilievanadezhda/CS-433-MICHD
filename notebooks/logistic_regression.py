@@ -1,3 +1,5 @@
+"""This file contains the random search for the best hyperparameters for logistic regression."""
+
 import sys
 
 sys.path.append("../")

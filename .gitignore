@@ -7,3 +7,4 @@ settings.json
 notebooks/notes.ipynb
 notebooks/logistic_regression.csv
 notebooks/out.sh
+*csv

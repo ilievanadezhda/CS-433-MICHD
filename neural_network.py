@@ -1,3 +1,4 @@
+"""This file contains a neural network implementation with all supporting functions."""
 import numpy as np
 from cross_validation import f1_score
 
@@ -200,6 +201,7 @@ def train(network, X, y):
     return np.mean(loss)
 
 
+# iterate over minibatches
 def iterate_minibatches(inputs, targets, batchsize, shuffle=False):
     assert len(inputs) == len(targets)
     np.random.seed(0)
@@ -217,6 +219,7 @@ def iterate_minibatches(inputs, targets, batchsize, shuffle=False):
         yield inputs[indexes], targets[indexes]
 
 
+# cross validation for neural network
 def cross_validation_nn(y, tx, k_indices):
     k = len(k_indices)
     f1s = []

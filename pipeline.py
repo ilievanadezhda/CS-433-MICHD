@@ -1,3 +1,4 @@
+"""This file contains a pipeline for data preprocessing and model evaluation on logistic regression and regularized logistic regression. """
 import numpy as np
 from feature_processing import (
     drop_columns,
