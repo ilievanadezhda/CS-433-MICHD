@@ -1,6 +1,5 @@
 """ This file contains some helper functions used in implementations.py."""
 import numpy as np
-import pandas as pd
 
 
 def compute_loss_mse(y, tx, w):
