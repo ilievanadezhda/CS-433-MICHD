@@ -55,4 +55,10 @@ As an output you should get a best_model.csv file in the same directory.
 
 ```bash
 python run.py
+```
+## Dependencies and Versioning
 
+- **Python**: 3.9.16
+- **NumPy**: 1.23.5
+
+> Note: Using NumPy version 1.19 yields inconsistent results when executing `run.py`. We are not aware whether earlier versions might produce the same incosistencies.
