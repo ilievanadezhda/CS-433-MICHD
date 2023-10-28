@@ -162,7 +162,7 @@ def main():
 
     y_pred = predict(network, x_test_temp)
     y_pred[np.where(y_pred == 0)] = -1
-    create_csv_submission(test_ids, y_pred, "best_model1.csv")
+    create_csv_submission(test_ids, y_pred, "best_model.csv")
 
 
 if __name__ == "__main__":
