@@ -30,9 +30,10 @@ This repository contains the code and resources for our Machine Learning project
 - For our best results, we implemented a simple neural network from scratch.
 - Details and implementation can be found in `neural_network.py`.
 
-### Additional Implementations
+### Implementations and Additional Code
 
-- Various other implementations and utilities can be found in `implementations.py` and `implementations_utils.py`.
+- As required, we implemented six distinct machine learning models: linear regression using gradient de- scent, linear regression using stochastic gradient de- scent, least squares regression using normal equations, ridge regression using normal equations, logistic re- gression using gradient descent and regularized logistic regression using gradient descent, these can be found in `implementations.py` and `implementations_utils.py`.
+- The `helpers.py` was provided from the staff. It contains some helper functions, such as loading csv data, or creating submissions.
 
 ## Notebooks and Additional Code
 
@@ -42,10 +43,6 @@ This repository contains the code and resources for our Machine Learning project
 - `experiments.ipynb`: Contains various experiments conducted during the project. It was mainly used to pinpoint the best hyperparameters.
 - `neural_network.ipynb`: Notebook for the neural network model. This model contains the workflow of the neural network. The difference is that we use a separate validation set which we used in order to find optimal number of epochs.
 - `pipeline.ipynb`: This file contains a pipeline for data preprocessing and model evaluation on logistic regression and regularized logistic regression.
-
-## Results
-
-Results from various experiments and configurations can be found in the `results` directory.
 
 ## Running the Code
 To execute the main pipeline, follow the steps below:
