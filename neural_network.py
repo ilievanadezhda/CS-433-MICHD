@@ -16,15 +16,12 @@ class Layer:
         """
         Initialize layer parameters.
         """
-        # Here we use a dummy layer that does nothing.
         pass
 
     def forward(self, input):
         """
         Takes input data of shape [batch, input_dims], returns output data [batch, output_dims]
         """
-
-        # Here we use a dummy layer that returns the input.
         return input
 
     def backward(self, input, grad_output):
@@ -39,7 +36,6 @@ class Layer:
         Note that if the layer has trainable parameters, we also need to update them using d loss / d layer.
         """
 
-        # The gradient of a dummy layer is grad_output
         return grad_output
 
 
@@ -80,7 +76,7 @@ class Fully_connected(Layer):
         X is an object-feature matrix of shape [batch_size, num_features == input_dims],
         W is a weight matrix [num_features, num_outputs]
         """
-
+        np.random.seed(0)
         self.weights = np.random.randn(input_dims, output_dims) * 0.05
         self.biases = np.zeros(output_dims)
         self.learning_rate = learning_rate
@@ -206,7 +202,7 @@ def train(network, X, y):
 
 def iterate_minibatches(inputs, targets, batchsize, shuffle=False):
     assert len(inputs) == len(targets)
-
+    np.random.seed(0)
     if shuffle:
         indices = np.random.permutation(len(inputs))
     else:
@@ -214,11 +210,11 @@ def iterate_minibatches(inputs, targets, batchsize, shuffle=False):
 
     for start_idx in range(0, len(inputs) - batchsize + 1, batchsize):
         if shuffle:
-            indexs = indices[start_idx : start_idx + batchsize]
+            indexes = indices[start_idx : start_idx + batchsize]
         else:
-            indexs = slice(start_idx, start_idx + batchsize)
+            indexes = slice(start_idx, start_idx + batchsize)
 
-        yield inputs[indexs], targets[indexs]
+        yield inputs[indexes], targets[indexes]
 
 
 def cross_validation_nn(y, tx, k_indices):
