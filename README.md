@@ -51,5 +51,8 @@ To execute the main pipeline, follow the steps below:
 2. Navigate to the project directory.
 3. Run the following command:
 
+As an output you should get a best_model.csv file in the same directory.
+
 ```bash
 python run.py
+
