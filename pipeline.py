@@ -99,16 +99,16 @@ def execute_pipeline(
         x_test_temp = x_test_temp[:, cols_to_keep_3]
         print("Dropping single valued columns...")
 
+    x_train_temp, cols_to_keep_2 = drop_correlated_columns(
+        x_train_temp, DROP_CORR_THRESHOLD
+    )
+    x_test_temp = x_test_temp[:, cols_to_keep_2]
+
     # Standardize the datasets
     if STANDARDIZE:
         print("Standardizing...")
         x_train_temp = standardize(x_train_temp)
         x_test_temp = standardize(x_test_temp)
-
-    x_train_temp, cols_to_keep_2 = drop_correlated_columns(
-        x_train_temp, DROP_CORR_THRESHOLD
-    )
-    x_test_temp = x_test_temp[:, cols_to_keep_2]
 
     # Cross-validation and model evaluation
     k_indices = build_k_indices(y_train, NUM_FOLDS, 42)

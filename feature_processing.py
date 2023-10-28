@@ -181,7 +181,7 @@ def build_log(x, epsilon=1e-10):
 
 
 def build_ratios(x, epsilon=1e-10):
-    """Compute ratios of each feature against average, max, and min of all features.
+    """Calculate the ratio of each feature compared to its average, maximum, and minimum.
 
     Args:
         x: numpy array of shape (N, D), N is the number of samples, D is the number of features.
@@ -191,16 +191,16 @@ def build_ratios(x, epsilon=1e-10):
         ratio_features: numpy array of shape (N, 3D) containing the new features.
     """
 
-    # Calculate average, max, and min across all features for each sample
+    # calculate average, max, and min across all features for each sample
     avg_features = np.mean(x, axis=1, keepdims=True)
     min_features = np.min(x, axis=1, keepdims=True)
     max_features = np.max(x, axis=1, keepdims=True)
-    # Calculate ratios
+    # calculate ratios
     ratio_to_avg = x / (avg_features + epsilon)
     ratio_to_min = x / (min_features + epsilon)
     ratio_to_max = x / (max_features + epsilon)
 
-    # Stack all ratios
+    # stack all ratios
     ratio_features = np.hstack((ratio_to_avg, ratio_to_min, ratio_to_max))
 
     return ratio_features
