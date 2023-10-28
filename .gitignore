@@ -5,3 +5,5 @@ archive/
 settings.json
 .DS_Store
 notebooks/notes.ipynb
+notebooks/logistic_regression.csv
+notebooks/out.sh
